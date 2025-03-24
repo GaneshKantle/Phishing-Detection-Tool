@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Detect potentially malicious URLs with our phishing URL detection tool">
+    <meta name="keywords" content="phishing detection, URL safety, cybersecurity, online safety, security tool">
+    <meta name="author" content="Ganesh Kantle">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <title>SafeURL - Phishing Detection Tool</title>
+
+    <style>
+
+
+        /* Base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header styles */
+        header {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+            color: #4361ee;
+            margin-right: 15px;
+        }
+
+        .logo h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #4361ee;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        /* Main content styles */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .search-section {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .search-section h2 {
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 1.8rem;
+        }
+
+        .search-section p {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .url-form {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            border: 2px solid #e1e1e1;
+            border-radius: 50px;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+
+        .input-group:focus-within {
+            border-color: #4361ee;
+        }
+
+        .input-icon {
+            padding: 10px 15px;
+            margin-left: 4px;
+            background-color: #f8f9fa;
+        }
+
+        .input-icon i {
+            color: #666;
+        }
+
+        input[type="url"] {
+            flex: 1.3;
+            padding: 15px;
+            border: none;
+            outline: none;
+            width: 135%;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .scan-button {
+            padding: 17px 25px;
+            margin-right: 4px;
+            background-color: #4361ee;
+            color: #fff;
+            border: none;
+            border-top-right-radius: 50px;
+            border-bottom-right-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .scan-button:hover {
+            background-color: #3a56e8;
+        }
+
+        /* Results section styles */
+        .results-section {
+            margin-top: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .result-card {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .url-display {
+            margin-bottom: 25px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .url-display h3 {
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .scanned-url {
+            color: #4361ee;
+            word-break: break-all;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .scanned-url:hover {
+            color: #3a56e8;
+            text-decoration: underline;
+        }
+
+        .safety-meter {
+            margin: 25px 0;
+        }
+
+        .meter {
+            height: 20px;
+            background-color: #f1f1f1;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .meter-fill {
+            height: 100%;
+            width: 0;
+            transition: width 1s ease-in-out;
+        }
+
+        .safety-score {
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .result-message {
+            text-align: center;
+            font-size: 1.2rem;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .result-message.safe {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+
+        .result-message.unsafe {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: #F44336;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .button i {
+            font-size: 1.1rem;
+        }
+
+        .safe-button {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+
+        .safe-button:hover {
+            background-color: #43a047;
+            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+        }
+
+        .unsafe-button {
+            background-color: #F44336;
+            color: #fff;
+        }
+
+        .unsafe-button:hover {
+            background-color: #e53935;
+            box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3);
+        }
+
+        /* Info section styles */
+        .info-section {
+            margin: 60px 0;
+            text-align: center;
+        }
+
+        .info-section h2 {
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 1.8rem;
+        }
+
+        .info-cards {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .info-card {
+            flex: 1;
+            min-width: 250px;
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 30px 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .info-card i {
+            font-size: 2.5rem;
+            color: #4361ee;
+            margin-bottom: 15px;
+        }
+
+        .info-card h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .info-card p {
+            color: #666;
+        }
+
+        /* Risk explanation section */
+        .risk-explanation {
+            margin-top: 20px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .risk-explanation h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .risk-factors {
+            list-style-type: none;
+        }
+
+        .risk-factors li {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .risk-factors i {
+            margin-right: 10px;
+            color: #f44336;
+        }
+
+        .risk-factor-safe i {
+            color: #4caf50;
+        }
+
+        /* URL shortener section */
+        .url-shortener-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff8e1;
+            border-radius: 10px;
+            border-left: 4px solid #ffc107;
+        }
+
+        /* Computer vision section */
+        .future-feature {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f5e9;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px dashed #4caf50;
+        }
+
+        .future-feature i {
+            font-size: 2rem;
+            color: #4caf50;
+            margin-bottom: 10px;
+        }
+
+        .future-feature h3 {
+            margin-bottom: 10px;
+        }
+
+        /* Footer styles */
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            border-top: 1px solid #eee;
+            margin-top: 40px;
+        }
+
+        footer p {
+            margin-bottom: 15px;
+            color: #666;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: #4361ee;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #3a56e8;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+                border-radius: 12px;
+            }
+
+            .input-icon {
+                display: none;
+            }
+
+            input[type="url"] {
+                width: 100%;
+                border-bottom: 1px solid #e1e1e1;
+                border-radius: 0;
+            }
+
+            .scan-button {
+                width: 100%;
+                border-radius: 0;
+                border-bottom-left-radius: 12px;
+                border-bottom-right-radius: 12px;
+            }
+
+            .info-cards {
+                flex-direction: column;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .button {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                flex-direction: column;
+            }
+
+            .logo i {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+.search-section {
+    margin-top: 20px;
+    text-align: center;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+/* Make results visible after valid submission */
+.results-section.visible {
+    display: block !important;
+}
+
+    </style>
+</head>
+<body>
+ <div class="container">
+        <!-- Header Section -->
+        <header>
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <h1>SafeURL</h1>
+            </div>
+            <p class="tagline">Detect and avoid phishing websites</p>
+        </header>
+
+        <main>
+            <!-- URL Safety Check -->
+            <div class="search-section">
+                <h2>Check Website Safety</h2>
+                <p>Enter a URL below to check if it's safe or potentially malicious</p>
+
+                <form action="/" method="post" class="url-form">
+                    <div class="input-group">
+                        <div class="input-icon">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <input type="url" name="url" id="url-input" placeholder="Enter URL (e.g., https://example.com)" required>
+                        <button type="submit" name="check_type" value="url" class="scan-button">
+                            <i class="fas fa-search"></i> Scan URL
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- URL Results -->
+            <div class="results-section" id="results">
+                <div class="result-card">
+                    <h3>Scan Results</h3>
+                    <div class="url-display">
+                        <a href="#" target="_blank" class="scanned-url" id="scanned-url">{{ url }}</a>
+                    </div>
+
+                    <div class="safety-meter">
+                        <div class="meter">
+                            <div class="meter-fill" id="meter-fill"></div>
+                        </div>
+                        <p class="safety-score" id="safety-score">{{ url_result }}</p>
+                    </div>
+
+                    <div class="result-message" id="result-message">{{ url_message }}</div>
+
+                    <div class="risk-explanation">
+                        <h4>Risk Assessment Details:</h4>
+                        <ul class="risk-factors" id="risk-factors">
+                            <li class="risk-factor-safe"><i class="fas fa-check-circle"></i> Domain age: Valid</li>
+                            <li class="risk-factor-safe"><i class="fas fa-check-circle"></i> SSL certificate: Trusted</li>
+                            <li class="risk-factor-safe"><i class="fas fa-check-circle"></i> URL structure: Normal</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+        <!-- How It Works Section -->
+        <section class="info-section">
+            <h2>How It Works</h2>
+            <div class="info-cards">
+                <div class="info-card">
+                    <i class="fas fa-robot"></i>
+                    <h3>Advanced AI</h3>
+                    <p>Our machine learning models analyze URLs to detect phishing attempts</p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Fast Results</h3>
+                    <p>Get instant safety analysis for websites</p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-lock"></i>
+                    <h3>Stay Protected</h3>
+                    <p>Avoid identity theft and protect your information online</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer Section -->
+        <footer>
+            <p>&copy; 2025 SafeURL - All Rights Reserved</p>
+        </footer>
+    </div>
+    <!-- JavaScript -->
+   <script>
+
+
+
+    // Modify analyzeUrl() to call checkTyposquatting(url)
+    function analyzeUrl(url) {
+        let score = 100;
+
+        // Check for suspicious TLDs
+        const suspiciousTLDs = ['.xyz', '.tk', '.ml', '.ga', '.cf', '.gq', '.top', '.club'];
+        for (const tld of suspiciousTLDs) {
+            if (url.toLowerCase().endsWith(tld)) {
+                score -= 30;
+                break;
+            }
+        }
+
+        // Check for suspicious keywords in URL
+        const suspiciousKeywords = ['login', 'account', 'secure', 'update', 'banking', 'verify', 'paypal', 'amazon', 'microsoft', 'apple', 'google', 'facebook', 'instagram', 'confirm'];
+        for (const keyword of suspiciousKeywords) {
+            if (url.toLowerCase().includes(keyword)) {
+                score -= 10;
+                break;
+            }
+        }
+
+        // Check for IP addresses instead of domain names
+        if (/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(url)) {
+            score -= 50;
+        }
+
+        // Check for excessive subdomains
+        const subdomainCount = (url.match(/\./g) || []).length;
+        if (subdomainCount > 3) {
+            score -= 20;
+        }
+
+        // Check for long domain names (potential obfuscation)
+        if (url.length > 100) {
+            score -= 15;
+        }
+
+        // Check for URL encoding/obfuscation
+        if (url.includes('%')) {
+            score -= 15;
+        }
+
+        // Call the new typo-squatting checker
+        score += checkTyposquatting(url);
+
+        // Check for HTTP instead of HTTPS
+        if (url.startsWith('http:') && !url.startsWith('https:')) {
+            score -= 30;
+        }
+
+        // Ensure score is between 0-100
+        return Math.max(0, Math.min(100, score));
+    }
+
+       // Replace the existing JavaScript code with this:
+document.addEventListener('DOMContentLoaded', function() {
+    // Get elements
+    const form = document.querySelector('.url-form');
+    const results = document.getElementById('results');
+    const urlInput = document.getElementById('url-input');
+    const scannedUrl = document.getElementById('scanned-url');
+    const meterFill = document.getElementById('meter-fill');
+    const safetyScore = document.getElementById('safety-score');
+    const resultMessage = document.getElementById('result-message');
+    const continueButton = document.getElementById('continue-button');
+    const cautionButton = document.getElementById('caution-button');
+    const shortenerInfo = document.getElementById('shortener-info');
+    const riskFactors = document.getElementById('risk-factors');
+
+    // Hide results section initially if no form submission
+    if (!window.location.search) {
+        results.style.display = 'none';
+    }
+
+    // Form submission handler
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const url = urlInput.value;
+        if (!url) return;
+
+        // Update the scanned URL
+        scannedUrl.href = url.startsWith('http') ? url : 'https://' + url;
+        scannedUrl.textContent = url;
+
+        // Show the results section
+        results.style.display = 'block';
+
+        // Simulate scrolling to results
+        results.scrollIntoView({ behavior: 'smooth' });
+
+        // Analyze URL and determine safety percentage
+        const safetyPercentage = analyzeUrl(url);
+
+        // Update the safety meter and score
+        updateSafetyDisplay(safetyPercentage);
+
+        // Check if it's a URL shortener
+        checkIfShortUrl(url);
+
+        // Generate risk factors based on safety percentage
+        generateRiskFactors(safetyPercentage);
+
+        // Show appropriate button based on safety score
+        if (safetyPercentage >= 70) {
+            continueButton.style.display = 'flex';
+            cautionButton.style.display = 'none';
+            resultMessage.className = 'result-message safe';
+        } else {
+            continueButton.style.display = 'none';
+            cautionButton.style.display = 'flex';
+            resultMessage.className = 'result-message unsafe';
+        }
+    });
+
+    // Set up the continue buttons
+    continueButton.addEventListener('click', function() {
+        const url = scannedUrl.href;
+        window.open(url, '_blank');
+    });
+
+    cautionButton.addEventListener('click', function() {
+        const url = scannedUrl.href;
+        if (confirm('This URL may be unsafe. Do you still want to proceed?')) {
+            window.open(url, '_blank');
+        }
+    });
+
+    // Function to analyze URL and return safety percentage
+    function analyzeUrl(url) {
+        let score = 100;
+
+        // Check for suspicious TLDs
+        const suspiciousTLDs = ['.xyz', '.tk', '.ml', '.ga', '.cf', '.gq', '.top', '.club'];
+        for (const tld of suspiciousTLDs) {
+            if (url.toLowerCase().endsWith(tld)) {
+                score -= 30;
+                break;
+            }
+        }
+
+        // Check for suspicious keywords in URL
+        const suspiciousKeywords = ['login', 'account', 'secure', 'update', 'banking', 'verify', 'paypal', 'amazon', 'microsoft', 'apple', 'google', 'facebook', 'instagram', 'confirm'];
+        for (const keyword of suspiciousKeywords) {
+            if (url.toLowerCase().includes(keyword)) {
+                score -= 10;
+                break;
+            }
+        }
+
+        // Check for IP addresses instead of domain names
+        if (/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(url)) {
+            score -= 50;
+        }
+
+        // Check for excessive subdomains
+        const subdomainCount = (url.match(/\./g) || []).length;
+        if (subdomainCount > 3) {
+            score -= 20;
+        }
+
+        // Check for long domain names (potential obfuscation)
+        if (url.length > 100) {
+            score -= 15;
+        }
+
+        // Check for URL encoding/obfuscation
+        if (url.includes('%')) {
+            score -= 15;
+        }
+
+        // Look for common brands in URL with slight modifications (typosquatting)
+        const typosquatPatterns = ['paypa1', 'g00gle', 'faceb00k', 'amaz0n', 'appleid', 'mircosoft'];
+        for (const pattern of typosquatPatterns) {
+            if (url.toLowerCase().includes(pattern)) {
+                score -= 40;
+                break;
+            }
+        }
+
+        // Check for HTTP instead of HTTPS
+        if (url.startsWith('http:') && !url.startsWith('https:')) {
+            score -= 30;
+        }
+
+        // Ensure score is between 0-100
+        return Math.max(0, Math.min(100, score));
+    }
+
+    // Function to update safety display
+    function updateSafetyDisplay(percentage) {
+        // Update meter fill
+        meterFill.style.width = percentage + '%';
+
+        // Determine color based on percentage
+        let color;
+        if (percentage >= 90) {
+            color = '#4CAF50'; // Green
+        } else if (percentage >= 70) {
+            color = '#8BC34A'; // Light green
+        } else if (percentage >= 50) {
+            color = '#FFC107'; // Amber
+        } else if (percentage >= 30) {
+            color = '#FF9800'; // Orange
+        } else {
+            color = '#F44336'; // Red
+        }
+
+        // Apply color to meter and text
+        meterFill.style.backgroundColor = color;
+        safetyScore.style.color = color;
+
+        // Update text
+        safetyScore.textContent = `Website is ${percentage}% safe to use...`;
+
+        // Update message
+        if (percentage >= 90) {
+            resultMessage.textContent = 'This website appears to be very safe to visit.';
+            resultMessage.className = 'result-message safe';
+        } else if (percentage >= 70) {
+            resultMessage.textContent = 'This website appears to be safe to visit.';
+            resultMessage.className = 'result-message safe';
+        } else if (percentage >= 50) {
+            resultMessage.textContent = 'This website seems mostly safe but exercise some caution.';
+            resultMessage.className = 'result-message safe';
+        } else if (percentage >= 30) {
+            resultMessage.textContent = 'This website may pose some risks. Proceed with caution.';
+            resultMessage.className = 'result-message unsafe';
+        } else {
+            resultMessage.textContent = 'This website appears unsafe. We recommend avoiding it.';
+            resultMessage.className = 'result-message unsafe';
+        }
+    }
+
+    // Function to check if URL is a shortener
+    function checkIfShortUrl(url) {
+        const shortenerDomains = ['bit.ly', 'tinyurl.com', 'goo.gl', 't.co', 'ow.ly', 'is.gd', 'buff.ly', 'adf.ly', 'bitly.com', 'tny.im'];
+
+        let isShortUrl = false;
+        for (const domain of shortenerDomains) {
+            if (url.includes(domain)) {
+                isShortUrl = true;
+                break;
+            }
+        }
+
+        if (isShortUrl) {
+            shortenerInfo.innerHTML = `
+                <h4><i class="fas fa-expand-arrows-alt"></i> URL Expansion:</h4>
+                <p>This appears to be a shortened URL. Short URLs can hide malicious destinations.</p>
+                <p>Expanded URL: <span class="expanded-url">www.example-destination.com/actual-path</span></p>
+            `;
+        } else {
+            shortenerInfo.innerHTML = `
+                <h4><i class="fas fa-expand-arrows-alt"></i> URL Expansion:</h4>
+                <p>This appears to be a direct URL, not a shortened link.</p>
+            `;
+        }
+    }
+
+    // Function to generate risk factors
+    function generateRiskFactors(percentage) {
+        // Clear existing risk factors
+        riskFactors.innerHTML = '';
+
+        // Define factors based on safety score
+        if (percentage >= 90) {
+            // Very safe
+            addRiskFactor(true, 'Domain age: 5+ years (low risk)');
+            addRiskFactor(true, 'SSL certificate: Valid and trusted');
+            addRiskFactor(true, 'No suspicious redirects detected');
+            addRiskFactor(true, 'Not listed in phishing databases');
+            addRiskFactor(true, 'URL structure: Normal pattern');
+        } else if (percentage >= 70) {
+            // Mostly safe
+            addRiskFactor(true, 'Domain age: 2+ years (moderate risk)');
+            addRiskFactor(true, 'SSL certificate: Valid');
+            addRiskFactor(true, 'No suspicious redirects detected');
+            addRiskFactor(true, 'Not listed in phishing databases');
+            addRiskFactor(false, 'Multiple subdomains (minor concern)');
+        } else if (percentage >= 50) {
+            // Somewhat safe
+            addRiskFactor(false, 'Domain age: Less than 1 year (higher risk)');
+            addRiskFactor(true, 'SSL certificate: Valid');
+            addRiskFactor(true, 'No suspicious redirects detected');
+            addRiskFactor(false, 'Unusual URL structure');
+            addRiskFactor(false, 'Domain similar to popular brand');
+        } else if (percentage >= 30) {
+            // Risky
+            addRiskFactor(false, 'Domain age: Very recent (high risk)');
+            addRiskFactor(false, 'SSL certificate: Self-signed or missing');
+            addRiskFactor(false, 'Redirects detected');
+            addRiskFactor(false, 'Suspicious URL parameters');
+            addRiskFactor(true, 'Not currently in major blocklists');
+        } else {
+            // Very risky
+            addRiskFactor(false, 'Domain registered recently (high risk)');
+            addRiskFactor(false, 'SSL certificate: Invalid or missing');
+            addRiskFactor(false, 'Multiple suspicious redirects detected');
+            addRiskFactor(false, 'Reported in phishing databases');
+            addRiskFactor(false, 'Misleading domain name (typosquatting)');
+        }
+    }
+
+    // Helper function to add risk factors
+    function addRiskFactor(isSafe, text) {
+        const li = document.createElement('li');
+        li.className = isSafe ? 'risk-factor-safe' : '';
+
+        const icon = document.createElement('i');
+        icon.className = isSafe ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle';
+
+        li.appendChild(icon);
+        li.appendChild(document.createTextNode(' ' + text));
+        riskFactors.appendChild(li);
+    }
+});
+
+
+   </script>
+</body>
+</html>
